@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 4.9.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 13, 2021 at 12:31 PM
--- Server version: 10.4.18-MariaDB
--- PHP Version: 8.0.3
+-- Generation Time: Jul 14, 2021 at 09:59 AM
+-- Server version: 10.4.11-MariaDB
+-- PHP Version: 7.2.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -32,6 +33,17 @@ CREATE TABLE `tb_meja` (
   `status` enum('tersedia','tidak tersedia') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `tb_meja`
+--
+
+INSERT INTO `tb_meja` (`nomor_meja`, `status`) VALUES
+('01', 'tersedia'),
+('02', 'tidak tersedia'),
+('03', 'tersedia'),
+('04', 'tersedia'),
+('05', 'tidak tersedia');
+
 -- --------------------------------------------------------
 
 --
@@ -44,6 +56,15 @@ CREATE TABLE `tb_menu` (
   `harga` int(12) NOT NULL,
   `stok` enum('tersedia','tidak tersedia') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tb_menu`
+--
+
+INSERT INTO `tb_menu` (`id_menu`, `nama_menu`, `harga`, `stok`) VALUES
+('01-PLORG', 'Pletok Original', 19000, 'tersedia'),
+('02-PLSTR', 'Pletok Stoberi', 22000, 'tersedia'),
+('03-PLAGR', 'Pletok Anggur', 20000, 'tersedia');
 
 -- --------------------------------------------------------
 
@@ -60,6 +81,14 @@ CREATE TABLE `tb_pegawai` (
   `jabatan` varchar(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `tb_pegawai`
+--
+
+INSERT INTO `tb_pegawai` (`id_pegawai`, `nama_pegawai`, `notelp_pegawai`, `alamat`, `password`, `jabatan`) VALUES
+('P01', 'Ujang', '089562316237', 'Jl.sukrawetan kec.sukra kab.indramayu Bo.29', '1234', 'Pelayan'),
+('P02', 'Larasati', '089726636162', 'Jl.Sekeawi kec.sukamenak kab.bandung no.31', '5678', 'Kasir');
+
 -- --------------------------------------------------------
 
 --
@@ -72,6 +101,15 @@ CREATE TABLE `tb_pelanggan` (
   `nama_pelanggan` varchar(50) NOT NULL,
   `tgl_pemesanan` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tb_pelanggan`
+--
+
+INSERT INTO `tb_pelanggan` (`nomor_pelanggan`, `nomor_meja`, `nama_pelanggan`, `tgl_pemesanan`) VALUES
+('050721001', '01', 'Asep Balon', '2021-07-05'),
+('050721002', '03', 'Suptianto', '2021-07-05'),
+('050721003', '04', 'Sukuna', '2021-07-05');
 
 -- --------------------------------------------------------
 
@@ -87,6 +125,13 @@ CREATE TABLE `tb_pembayaran` (
   `total_bayar` int(12) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `tb_pembayaran`
+--
+
+INSERT INTO `tb_pembayaran` (`id_pembayaran`, `id_pegawai`, `id_pesanan`, `metode_bayar`, `total_bayar`) VALUES
+('050721-001', 'P02', '050721-001-001', 'cash', 267000);
+
 -- --------------------------------------------------------
 
 --
@@ -96,9 +141,17 @@ CREATE TABLE `tb_pembayaran` (
 CREATE TABLE `tb_pesanan` (
   `id_pesanan` varchar(15) NOT NULL,
   `nomor_pelanggan` varchar(10) NOT NULL,
-  `id_menu` varchar(10) NOT NULL,
   `tgl_pemesanan` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tb_pesanan`
+--
+
+INSERT INTO `tb_pesanan` (`id_pesanan`, `nomor_pelanggan`, `tgl_pemesanan`) VALUES
+('050721-001-001', '050721001', '2021-07-05'),
+('050721-002-002', '050721002', '2021-07-05'),
+('050721-003-003', '050721003', '2021-07-05');
 
 -- --------------------------------------------------------
 
@@ -111,6 +164,15 @@ CREATE TABLE `tb_rincian_pesanan` (
   `id_menu` varchar(10) NOT NULL,
   `jumlah_pesanan` int(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tb_rincian_pesanan`
+--
+
+INSERT INTO `tb_rincian_pesanan` (`id_pesanan`, `id_menu`, `jumlah_pesanan`) VALUES
+('050721-001-001', '01-PLORG', 3),
+('050721-001-001', '02-PLSTR', 5),
+('050721-001-001', '03-PLAGR', 5);
 
 --
 -- Indexes for dumped tables
@@ -154,8 +216,7 @@ ALTER TABLE `tb_pembayaran`
 --
 ALTER TABLE `tb_pesanan`
   ADD PRIMARY KEY (`id_pesanan`),
-  ADD KEY `nomor_pelanggan` (`nomor_pelanggan`),
-  ADD KEY `id_menu` (`id_menu`);
+  ADD KEY `nomor_pelanggan` (`nomor_pelanggan`);
 
 --
 -- Indexes for table `tb_rincian_pesanan`
@@ -185,8 +246,7 @@ ALTER TABLE `tb_pembayaran`
 -- Constraints for table `tb_pesanan`
 --
 ALTER TABLE `tb_pesanan`
-  ADD CONSTRAINT `tb_pesanan_ibfk_1` FOREIGN KEY (`nomor_pelanggan`) REFERENCES `tb_pelanggan` (`nomor_pelanggan`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `tb_pesanan_ibfk_2` FOREIGN KEY (`id_menu`) REFERENCES `tb_menu` (`id_menu`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `tb_pesanan_ibfk_1` FOREIGN KEY (`nomor_pelanggan`) REFERENCES `tb_pelanggan` (`nomor_pelanggan`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tb_rincian_pesanan`
